@@ -11,9 +11,15 @@ importers:
       '@fontsource-variable/roboto-flex':
         specifier: ^5.1.0
         version: 5.1.0
+      '@fortawesome/free-solid-svg-icons':
+        specifier: ^6.6.0
+        version: 6.6.0
       '@tauri-apps/api':
         specifier: ^1
         version: 1.6.0
+      svelte-fa:
+        specifier: ^4.0.3
+        version: 4.0.3(svelte@4.2.19)
     devDependencies:
       '@sveltejs/adapter-static':
         specifier: ^3.0.1
@@ -189,6 +195,14 @@ packages:
 
   '@fontsource-variable/roboto-flex@5.1.0':
     resolution: {integrity: sha512-TwH8+uOwBqIjxtvTc+kp7ywyH7V7bDLbAXrEQg2SoCTJ6m2pn00x7ULioTTzDEvek+XpbqIf8gbKE1zlcONNGg==}
+
+  '@fortawesome/fontawesome-common-types@6.6.0':
+    resolution: {integrity: sha512-xyX0X9mc0kyz9plIyryrRbl7ngsA9jz77mCZJsUkLl+ZKs0KWObgaEBoSgQiYWAsSmjz/yjl0F++Got0Mdp4Rw==}
+    engines: {node: '>=6'}
+
+  '@fortawesome/free-solid-svg-icons@6.6.0':
+    resolution: {integrity: sha512-IYv/2skhEDFc2WGUcqvFJkeK39Q+HyPf5GHUrT/l2pKbtgEIv1al1TKd6qStR5OIwQdN1GZP54ci3y4mroJWjA==}
+    engines: {node: '>=6'}
 
   '@jridgewell/gen-mapping@0.3.5':
     resolution: {integrity: sha512-IzL8ZoEDIBRWEzlCcRhOaCupYyN5gdIK+Q6fbFdPDg6HqX6jpkItn7DFIpW9LQzXG6Df9sA7+OKnq0qlz/GaQg==}
@@ -657,6 +671,11 @@ packages:
     peerDependencies:
       svelte: ^3.55.0 || ^4.0.0-next.0 || ^4.0.0 || ^5.0.0-next.0
 
+  svelte-fa@4.0.3:
+    resolution: {integrity: sha512-saZ8yACM0k9Aexey+2NXU1W0MBosU5lBsRgqFCJKM+Taw7d0HyimPaPAjmvY/Xkyi3UwEYL/Sdu1IZJv/p0Flw==}
+    peerDependencies:
+      svelte: ^4.0.0 || ^5.0.0
+
   svelte-hmr@0.16.0:
     resolution: {integrity: sha512-Gyc7cOS3VJzLlfj7wKS0ZnzDVdv3Pn2IuVeJPk9m2skfhcu5bq3wtIZyQGggr7/Iim5rH5cncyQft/kRLupcnA==}
     engines: {node: ^12.20 || ^14.13.1 || >= 16}
@@ -842,6 +861,12 @@ snapshots:
     optional: true
 
   '@fontsource-variable/roboto-flex@5.1.0': {}
+
+  '@fortawesome/fontawesome-common-types@6.6.0': {}
+
+  '@fortawesome/free-solid-svg-icons@6.6.0':
+    dependencies:
+      '@fortawesome/fontawesome-common-types': 6.6.0
 
   '@jridgewell/gen-mapping@0.3.5':
     dependencies:
@@ -1293,6 +1318,10 @@ snapshots:
       - sass
       - stylus
       - sugarss
+
+  svelte-fa@4.0.3(svelte@4.2.19):
+    dependencies:
+      svelte: 4.2.19
 
   svelte-hmr@0.16.0(svelte@4.2.19):
     dependencies:

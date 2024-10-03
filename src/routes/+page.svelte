@@ -27,6 +27,7 @@
   h1 {
     font-weight: 150;
     text-align: center;
-    color: #9e9e9e;
+    color: var(--tertiary-color);
+    user-select: none;
   }
 </style>

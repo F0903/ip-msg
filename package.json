@@ -14,7 +14,9 @@
   "license": "MIT",
   "dependencies": {
     "@fontsource-variable/roboto-flex": "^5.1.0",
-    "@tauri-apps/api": "^1"
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@tauri-apps/api": "^1",
+    "svelte-fa": "^4.0.3"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.1",
