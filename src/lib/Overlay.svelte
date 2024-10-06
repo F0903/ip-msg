@@ -11,7 +11,7 @@
 
 <div class="overlay-container">
   <button class="close-button" on:click={onClose}>
-    <Fa icon={faXmark} class="close-button-icon" />
+    <Fa icon={faXmark} style="width: 50%; height: 50%;" />
   </button>
   <div class="overlay-content">
     <slot></slot>
@@ -19,14 +19,19 @@
 </div>
 
 <style>
-  .overlay-content {
-    margin-right: 100px;
+  .overlay-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+
+    background: var(--primary-color);
   }
 
-  /* Specifying svg here is important so this overwrites the default FA style*/
-  :global(svg.close-button-icon) {
-    width: 50%;
-    height: 50%;
+  .overlay-content {
+    padding-right: 100px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
   }
 
   .close-button {
@@ -44,13 +49,5 @@
     text-align: center;
 
     cursor: pointer;
-  }
-
-  .overlay-container {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-
-    background: var(--primary-color);
   }
 </style>

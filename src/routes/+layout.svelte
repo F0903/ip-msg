@@ -23,9 +23,10 @@
     --secondary-color: #252525;
     --tertiary-color: #ce6c47; /*#F46036*/
 
-    --primary-text-color: #f6f6f6;
+    --primary-text-color: #e4e4e4;
+    --primary-font: "Roboto Flex Variable", sans-serif;
 
-    font-family: "Roboto Flex Variable", sans-serif;
+    font-family: var(--primary-font);
     font-size: 16px;
     line-height: 24px;
     color: var(--primary-text-color);
