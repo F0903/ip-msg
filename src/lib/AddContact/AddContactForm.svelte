@@ -1,6 +1,6 @@
 <script lang="ts">
-  import ContactInput from "$lib/ContactPanel/ContactInput.svelte";
-  import ContactInputSubmitButton from "$lib/ContactPanel/ContactInputSubmitButton.svelte";
+  import ContactInput from "$lib/AddContact/ContactInput.svelte";
+  import ContactInputSubmitButton from "$lib/AddContact/ContactInputSubmitButton.svelte";
   import { invoke } from "@tauri-apps/api";
 
   let success = false;

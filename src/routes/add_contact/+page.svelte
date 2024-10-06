@@ -1,5 +1,5 @@
 <script lang="ts">
-  import AddContactForm from "$lib/ContactPanel/AddContactForm.svelte";
+  import AddContactForm from "$lib/AddContact/AddContactForm.svelte";
   import Overlay from "$lib/Overlay.svelte";
 </script>
 
