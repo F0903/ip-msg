@@ -12,20 +12,7 @@ struct ContactsSurface<'a> {
 impl<'a> ContactsSurface<'a> {
     pub async fn new(db: &'a LocalDb) -> Result<Self> {
         let mut me = Self { db };
-        me.assert_table().await?;
         Ok(me)
-    }
-
-    async fn assert_table(&mut self) -> Result<()> {
-        sqlx::query!(
-            r#"create table if not exists contacts (
-                name varchar(50) primary key,
-                ip varchar(45) not null unique
-            )"#
-        )
-        .execute(self.db.get_pool())
-        .await?;
-        Ok(())
     }
 
     pub async fn write(&self, contact: Contact) -> Result<()> {
