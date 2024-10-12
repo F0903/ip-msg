@@ -1,17 +1,14 @@
-use crate::{
-    db::{local_db::LocalDb, types::IpV4},
-    models::Contact,
-};
+use crate::{db::local_db::LocalDb, models::Contact};
 
 type Result<T> = crate::db::local_db::Result<T>;
 
-struct ContactsSurface<'a> {
+pub struct ContactsSurface<'a> {
     db: &'a LocalDb,
 }
 
 impl<'a> ContactsSurface<'a> {
-    pub async fn new(db: &'a LocalDb) -> Result<Self> {
-        let mut me = Self { db };
+    pub async fn on(db: &'a LocalDb) -> Result<Self> {
+        let me = Self { db };
         Ok(me)
     }
 

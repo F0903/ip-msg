@@ -18,4 +18,7 @@ export default defineConfig(async () => ({
       ignored: ["**/src-tauri/**"],
     },
   },
+  build: {
+    target: ["es2021", "last 3 Chrome versions", "safari 13"],
+  },
 }));
