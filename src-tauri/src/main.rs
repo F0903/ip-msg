@@ -30,6 +30,7 @@ impl BackendError {
 #[tauri::command]
 async fn add_contact(contact: Contact) -> Result<bool> {
     println!("add_contact called! Contact is: {:?}", contact);
+
     let db = DB.get().await.map_err(|e| BackendError::new(e))?;
     let contacts = ContactsSurface::on(db)
         .await
@@ -38,6 +39,7 @@ async fn add_contact(contact: Contact) -> Result<bool> {
         .write(contact)
         .await
         .map_err(|e| BackendError::new(e))?;
+
     Ok(true)
 }
 

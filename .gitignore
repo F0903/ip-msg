@@ -1,3 +1,7 @@
+# Custom
+*.db*
+
+# Generated
 .DS_Store
 node_modules
 /build

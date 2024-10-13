@@ -1,6 +1,4 @@
-use sqlx::pool::PoolConnection;
 use sqlx::sqlite::{SqliteConnectOptions, SqlitePool};
-use sqlx::Sqlite;
 
 pub(super) type Result<T> = std::result::Result<T, sqlx::Error>;
 
