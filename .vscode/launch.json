@@ -11,7 +11,7 @@
       // change the exe name to your actual exe name
       // (to debug release builds, change `target/debug` to `release/debug`)
       "program": "${workspaceRoot}/src-tauri/target/debug/ip_msg.exe",
-      "cwd": "${workspaceRoot}",
+      "cwd": "${workspaceRoot}/src-tauri/",
       "preLaunchTask": "ui:dev"
     }
   ]

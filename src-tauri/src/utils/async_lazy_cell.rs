@@ -64,3 +64,20 @@ impl<T, E> AsyncLazyCell<T, E> {
 
 unsafe impl<T: Send, E: Send> Send for AsyncLazyCell<T, E> {}
 unsafe impl<T: Sync, E: Sync> Sync for AsyncLazyCell<T, E> {}
+
+// Can't be used as planned due to https://github.com/rust-lang/rust/issues/100013
+/* pub trait ToInnerRef<T, E> {
+    async fn to_inner_ref<'a>(&'a self) -> Result<&'a T, E>
+    where
+        T: 'a;
+}
+
+impl<T, E> ToInnerRef<T, E> for AsyncLazyCell<T, E> {
+    async fn to_inner_ref<'a>(&'a self) -> Result<&'a T, E>
+    where
+        T: 'a,
+    {
+        let val = self.get().await;
+        val
+    }
+} */
