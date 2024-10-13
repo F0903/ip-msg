@@ -1,7 +1,7 @@
 use std::net::Ipv4Addr;
 
 use serde::{Deserialize, Serialize};
-use sqlx::{Decode, Encode, Sqlite, Type, ValueRef};
+use sqlx::{Decode, Encode, Sqlite, Type};
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy)]
 pub struct IpV4(pub Ipv4Addr);
