@@ -2,6 +2,7 @@
   export let name: string;
   export let placeholder: string;
   export let pattern: string;
+  export let autocomplete: "on" | "off" | string = "off";
 
   export let submit_success = false;
 </script>
@@ -12,6 +13,7 @@
   class:success={submit_success}
   type="text"
   maxlength="30"
+  {autocomplete}
   {pattern}
   {placeholder}
 />
