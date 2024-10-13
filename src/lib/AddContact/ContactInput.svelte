@@ -4,13 +4,15 @@
   export let pattern: string;
   export let autocomplete: "on" | "off" | string = "off";
 
-  export let submit_success = false;
+  export let submit_state: "success" | "failure" | "unsubmitted" =
+    "unsubmitted";
 </script>
 
 <input
   {name}
   class="contact-input"
-  class:success={submit_success}
+  class:success={submit_state === "success"}
+  class:failure={submit_state === "failure"}
   type="text"
   maxlength="30"
   {autocomplete}
@@ -51,6 +53,7 @@
     border-bottom-color: var(--tertiary-color);
   }
 
+  .contact-input.failure,
   .contact-input:invalid {
     color: rgb(245, 66, 66);
     border-bottom-color: rgb(245, 66, 66);

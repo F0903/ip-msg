@@ -3,13 +3,22 @@
   import ContactInputSubmitButton from "$lib/AddContact/ContactInputSubmitButton.svelte";
   import { invoke } from "@tauri-apps/api/core";
 
-  let success = false;
+  let state: "success" | "failure" | "unsubmitted" = "unsubmitted";
 
   async function add_contact(event: SubmitEvent) {
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
     const form = Object.fromEntries(formData.entries());
-    success = await invoke("add_contact", { contact: form });
+
+    try {
+      await invoke("add_contact", {
+        contact: form,
+      });
+      state = "success";
+    } catch (error) {
+      console.log(error);
+      state = "failure";
+    }
   }
 </script>
 
@@ -20,15 +29,15 @@
       name="name"
       placeholder="Name"
       pattern="(\w|\d)+"
-      submit_success={success}
+      submit_state={state}
     />
     <ContactInput
       name="ip"
       placeholder="IP Address"
       pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){'{'}4{'}'}$"
-      submit_success={success}
+      submit_state={state}
     />
-    <ContactInputSubmitButton submit_success={success} />
+    <ContactInputSubmitButton submit_state={state} />
   </form>
 </div>
 

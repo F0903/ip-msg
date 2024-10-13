@@ -1,6 +1,7 @@
-use crate::{db::local_db::LocalDb, models::Contact};
-
-type Result<T> = crate::db::local_db::Result<T>;
+use crate::{
+    db::{error::Result, local_db::LocalDb},
+    models::Contact,
+};
 
 pub struct ContactsSurface<'a> {
     db: &'a LocalDb,
@@ -22,8 +23,9 @@ impl<'a> ContactsSurface<'a> {
     }
 
     pub async fn get_all(&self) -> Result<Vec<Contact>> {
-        sqlx::query_as("SELECT * FROM contacts")
+        let val = sqlx::query_as("SELECT * FROM contacts")
             .fetch_all(self.db.get_pool())
-            .await
+            .await?;
+        Ok(val)
     }
 }

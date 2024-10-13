@@ -1,6 +1,5 @@
+use super::error::Result;
 use sqlx::sqlite::{SqliteConnectOptions, SqlitePool};
-
-pub(super) type Result<T> = std::result::Result<T, sqlx::Error>;
 
 pub struct LocalDb {
     pool: SqlitePool,

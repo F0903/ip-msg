@@ -24,6 +24,7 @@ sqlx = { version = "^0.8", features = [
     "sqlite",
 ] }
 tauri-plugin-shell = "2"
+thiserror = "1.0"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

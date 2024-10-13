@@ -1,15 +1,15 @@
-mod backend_error;
 mod db;
 mod models;
 mod utils;
 
-pub use backend_error::BackendError;
-use db::LocalDb;
+pub mod backend_error;
+
+use db::{DbError, LocalDb};
 use tauri::Manager;
 use utils::AsyncLazyCell;
 
 struct AppState {
-    db: AsyncLazyCell<LocalDb, sqlx::Error>,
+    db: AsyncLazyCell<LocalDb, DbError>,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

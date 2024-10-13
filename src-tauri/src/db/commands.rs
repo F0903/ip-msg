@@ -1,22 +1,20 @@
+use crate::backend_error::Result;
 use crate::db::ContactsSurface;
 use crate::models::Contact;
-use crate::{AppState, BackendError};
+use crate::AppState;
 use tauri::State;
 
-type Result<T> = std::result::Result<T, BackendError>;
-
 #[tauri::command]
-pub async fn add_contact(state: State<'_, AppState>, contact: Contact) -> Result<bool> {
+pub async fn add_contact(state: State<'_, AppState>, contact: Contact) -> Result<()> {
     println!("add_contact called! Contact is: {:?}", contact);
 
-    let db = state.db.get().await.map_err(|e| BackendError::new(e))?;
-    let contacts = ContactsSurface::on(db)
-        .await
-        .map_err(|e| BackendError::new(e))?;
-    contacts
-        .write(contact)
-        .await
-        .map_err(|e| BackendError::new(e))?;
+    let contacts = ContactsSurface::on(state.db.get().await?).await?;
+    let result = contacts.write(contact).await;
+    match &result {
+        Ok(_) => println!("ok"),
+        Err(e) => println!("err: {}", e),
+    }
+    result?;
 
-    Ok(true)
+    Ok(())
 }
