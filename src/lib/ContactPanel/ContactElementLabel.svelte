@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let label: Char;
+  export let label: string;
 </script>
 
 <div class="container">

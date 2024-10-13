@@ -9,12 +9,17 @@ pub async fn add_contact(state: State<'_, AppState>, contact: Contact) -> Result
     println!("add_contact called! Contact is: {:?}", contact);
 
     let contacts = ContactsSurface::on(state.db.get().await?).await?;
-    let result = contacts.write(contact).await;
-    match &result {
-        Ok(_) => println!("ok"),
-        Err(e) => println!("err: {}", e),
-    }
-    result?;
+    contacts.write(contact).await?;
 
     Ok(())
+}
+
+#[tauri::command]
+pub async fn get_all_contacts(state: State<'_, AppState>) -> Result<Vec<Contact>> {
+    println!("get_all_contacts called!");
+
+    let contacts = ContactsSurface::on(state.db.get().await?).await?;
+    let contacts_list = contacts.get_all().await?;
+
+    Ok(contacts_list)
 }

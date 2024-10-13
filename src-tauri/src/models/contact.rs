@@ -1,7 +1,7 @@
 use crate::db::types::IpV4;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug, sqlx::FromRow)]
+#[derive(Deserialize, Serialize, Debug, sqlx::FromRow)]
 pub struct Contact {
     name: String,
     ip: IpV4,

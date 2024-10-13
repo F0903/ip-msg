@@ -22,7 +22,10 @@ pub fn run() {
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![db::commands::add_contact])
+        .invoke_handler(tauri::generate_handler![
+            db::commands::add_contact,
+            db::commands::get_all_contacts
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
