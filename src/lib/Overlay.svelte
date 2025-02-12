@@ -1,53 +1,50 @@
 <script lang="ts">
-  import Fa from "svelte-fa";
-  import { faXmark } from "@fortawesome/free-solid-svg-icons";
+  import { faClose } from "@fortawesome/free-solid-svg-icons";
+  import Header from "./Header.svelte";
+  import IconButton from "./IconButton.svelte";
 
-  export let return_url: string;
+  let { title, children } = $props();
 
-  function onClose() {
-    window.location.replace(return_url);
+  let self: HTMLDialogElement | undefined = $state(undefined);
+
+  export function show() {
+    self!.show();
+  }
+
+  export function close() {
+    self!.close();
   }
 </script>
 
-<div class="overlay-container">
-  <button class="close-button" on:click={onClose}>
-    <Fa icon={faXmark} style="width: 50%; height: 50%;" />
-  </button>
-  <div class="overlay-content">
-    <slot></slot>
-  </div>
-</div>
+<dialog class="overlay" bind:this={self}>
+  <Header>
+    {#snippet center()}
+      <h2 class="overlay-title">{title}</h2>
+    {/snippet}
+    {#snippet right()}
+      <IconButton icon={faClose} onclick={close} />
+    {/snippet}
+  </Header>
+  {@render children()}
+</dialog>
 
 <style>
-  .overlay-container {
+  .overlay-title {
+    color: var(--secondary-text-color);
+
+    font-weight: 400;
+  }
+
+  .overlay {
     position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
 
-    background: var(--primary-color);
-  }
+    background-color: var(--primary-color);
 
-  .overlay-content {
-    padding-right: 100px;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-  }
-
-  .close-button {
-    position: absolute;
-    right: 0px;
-    margin: 25px;
-    width: 50px;
-    height: 50px;
-
-    background: var(--secondary-color);
+    box-shadow: none;
     border: none;
-    border-radius: 50%;
-
-    color: var(--tertiary-color);
-    text-align: center;
-
-    cursor: pointer;
   }
 </style>
