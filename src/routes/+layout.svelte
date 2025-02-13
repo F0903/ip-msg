@@ -9,19 +9,20 @@
   import ToggleIconButton from "$lib/ToggleIconButton.svelte";
   import PopoutShelf from "$lib/PopoutShelf.svelte";
   import Overlay from "$lib/Overlay.svelte";
+  import AddContactPopup from "$lib/AddContactPopup.svelte";
 
   let { children } = $props();
 
   let menuToggled = $state(true);
 
-  let addContactPopup: Overlay | undefined;
+  let addContactPopup: AddContactPopup | undefined;
 
   function onContactsClicked() {
     addContactPopup!.show();
   }
 </script>
 
-<Overlay bind:this={addContactPopup} title="Add Contact">Hello</Overlay>
+<AddContactPopup bind:this={addContactPopup} />
 <div class="container">
   <Header>
     {#snippet left()}
@@ -73,8 +74,8 @@
     --tertiary-color: hsl(0, 0%, 30%);
     --quaternary-color: hsl(30, 84%, 65%);
 
-    --primary-text-color: hsl(30, 40%, 81%);
-    --secondary-text-color: hsl(0, 0%, 65%);
+    --primary-text-color: hsl(0, 0%, 65%);
+    --secondary-text-color: hsl(30, 40%, 81%);
 
     background-color: var(--primary-color);
     color: var(--primary-text-color);

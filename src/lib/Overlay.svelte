@@ -30,7 +30,7 @@
 
 <style>
   .overlay-title {
-    color: var(--secondary-text-color);
+    color: var(--primary-text-color);
 
     font-weight: 400;
   }
