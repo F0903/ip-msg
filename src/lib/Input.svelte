@@ -1,9 +1,9 @@
 <script>
-  let { name, type = "text", placeholder, required } = $props();
+  let { name, label, type = "text", placeholder, required } = $props();
 </script>
 
 <div class="input-container">
-  <label for={name}>{name}</label>
+  <label for={name}>{label}</label>
   <input {type} {name} {placeholder} {required} />
 </div>
 

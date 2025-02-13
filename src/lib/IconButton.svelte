@@ -10,7 +10,7 @@
   }: {
     icon: IconDefinition;
     text?: string;
-    onclick: MouseEventHandler<HTMLButtonElement>;
+    onclick?: MouseEventHandler<HTMLButtonElement>;
   } = $props();
 </script>
 

@@ -1,28 +1,14 @@
 <script lang="ts">
-  import IconButton from "$lib/IconButton.svelte";
-  import {
-    faAdd,
-    faArrowLeft,
-    faBars,
-  } from "@fortawesome/free-solid-svg-icons";
+  import { faArrowLeft, faBars } from "@fortawesome/free-solid-svg-icons";
   import Header from "../lib/Header.svelte";
   import ToggleIconButton from "$lib/ToggleIconButton.svelte";
-  import PopoutShelf from "$lib/PopoutShelf.svelte";
-  import Overlay from "$lib/Overlay.svelte";
-  import AddContactPopup from "$lib/AddContactPopup.svelte";
+  import ContactsList from "$lib/contacts/ContactsList.svelte";
 
-  let { children } = $props();
+  let { data, children } = $props();
 
   let menuToggled = $state(true);
-
-  let addContactPopup: AddContactPopup | undefined;
-
-  function onContactsClicked() {
-    addContactPopup!.show();
-  }
 </script>
 
-<AddContactPopup bind:this={addContactPopup} />
 <div class="container">
   <Header>
     {#snippet left()}
@@ -37,21 +23,23 @@
     {/snippet}
   </Header>
 
-  {#if menuToggled}
-    <PopoutShelf --shelf-padding="15px 0px 0px 0px">
-      <IconButton
-        icon={faAdd}
-        text="Add Contact"
-        onclick={onContactsClicked}
-        --button-height="50px"
-      />
-    </PopoutShelf>
-  {/if}
+  <div class="content">
+    {#if menuToggled}
+      <ContactsList contacts={data.contacts} />
+    {/if}
 
-  {@render children()}
+    {@render children()}
+  </div>
 </div>
 
 <style>
+  .content {
+    display: flex;
+    flex-direction: row;
+
+    height: 100%;
+  }
+
   .container {
     display: flex;
     flex-direction: column;

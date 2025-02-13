@@ -20,17 +20,26 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
+[workspace.dependencies]
+tokio = { version = "1", features = ["full"] }
+uuid = { version = "*", features = ["v4"] }
+
+
 [dependencies]
 entity = { path = "entity" }
 migration = { path = "migration" }
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
+tokio = { workspace = true }
+uuid = { workspace = true }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-tokio = { version = "1", features = ["full"] }
 sea-orm = { version = "1.1.0", features = [
     "sqlx-sqlite",
     "runtime-tokio-rustls",
     "macros",
+    "with-uuid",
 ] }
 dotenv_codegen = "0.15.0"
+anyhow = "1.0.95"
+log = "0.4.25"

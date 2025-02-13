@@ -12,8 +12,12 @@ impl MigrationTrait for Migration {
                     .table(Message::Table)
                     .if_not_exists()
                     .col(pk_auto(Message::Id))
-                    .col(string(Message::IPAddress))
-                    .col(string(Message::Content))
+                    .col(uuid(Message::FromUUID))
+                    .col(uuid_null(Message::ToUUID).null())
+                    .col(string(Message::ContentType))
+                    .col(blob(Message::Content))
+                    .col(boolean(Message::Received))
+                    .col(text_null(Message::Signature))
                     .to_owned(),
             )
             .await
@@ -30,6 +34,10 @@ impl MigrationTrait for Migration {
 enum Message {
     Table,
     Id,
-    IPAddress,
+    FromUUID,
+    ToUUID,
+    ContentType,
     Content,
+    Received,
+    Signature,
 }

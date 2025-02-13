@@ -5,12 +5,10 @@
   }: { options: string[]; selected?: string } = $props();
 </script>
 
-<div class="selector">
-  <ul>
-    {#each options as option}
-      <li class:selected={option === selected}>{option}</li>
-    {/each}
-  </ul>
-</div>
+<ul>
+  {#each options as option}
+    <li class:selected={option === selected}>{option}</li>
+  {/each}
+</ul>
 
 <style></style>

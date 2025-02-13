@@ -17,53 +17,53 @@ This directory houses the SeaORM migrations, they can be run as follows:
 - Apply all pending migrations
 
     ```sh
-    sea-orm-cli
+    sea-orm-cli migrate
     ```
 
     ```sh
-    sea-orm-cli up
+    sea-orm-cli migrate up
     ```
 
   - Apply first 10 pending migrations
 
     ```sh
-    sea-orm-cli up -n 10
+    sea-orm-cli migrate up -n 10
     ```
 
 - Rollback last applied migrations
 
     ```sh
-    sea-orm-cli down
+    sea-orm-cli migrate down
     ```
 
 - Rollback last 10 applied migrations
 
     ```sh
-    sea-orm-cli down -n 10
+    sea-orm-cli migrate down -n 10
     ```
 
 - Drop all tables from the database, then reapply all migrations
 
     ```sh
-    sea-orm-cli fresh
+    sea-orm-cli migrate fresh
     ```
 
 - Rollback all applied migrations, then reapply all migrations
 
     ```sh
-    sea-orm-cli refresh
+    sea-orm-cli migrate refresh
     ```
 
 - Rollback all applied migrations
 
     ```sh
-    sea-orm-cli reset
+    sea-orm-cli migrate reset
     ```
 
 - Check the status of all migrations
 
     ```sh
-    sea-orm-cli status
+    sea-orm-cli migrate status
     ```
 
 ## Via Migrator CLI
