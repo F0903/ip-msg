@@ -29,7 +29,6 @@
           icon={faPerson}
           text={contact.name}
           onclick={() => onContactClicked(contact)}
-          --button-height="50px"
         />
       {/each}
     </div>
@@ -40,7 +39,6 @@
     icon={faAdd}
     text="Add Contact"
     onclick={onAddContactClicked}
-    --button-height="50px"
     --button-color="var(--quaternary-color)"
   />
 </PopoutShelf>

@@ -1,4 +1,5 @@
-use sea_orm_migration::{prelude::*, schema::*};
+use entity::content_type::ContentType;
+use sea_orm_migration::{prelude::*, schema::*, sea_orm::ActiveEnum};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -14,7 +15,11 @@ impl MigrationTrait for Migration {
                     .col(pk_auto(Message::Id))
                     .col(uuid(Message::FromUUID))
                     .col(uuid_null(Message::ToUUID).null())
-                    .col(string(Message::ContentType))
+                    .col(
+                        ColumnDef::new_with_type(ContentType::name(), ContentType::column_type())
+                            .not_null()
+                            .comment("CHANGE TO ContentType"),
+                    )
                     .col(blob(Message::Content))
                     .col(boolean(Message::Received))
                     .col(text_null(Message::Signature))
@@ -36,7 +41,6 @@ enum Message {
     Id,
     FromUUID,
     ToUUID,
-    ContentType,
     Content,
     Received,
     Signature,

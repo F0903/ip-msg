@@ -3,6 +3,8 @@
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
+use crate::content_type::ContentType;
+
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "message")]
 pub struct Model {
@@ -10,7 +12,7 @@ pub struct Model {
     pub id: i32,
     pub from_uuid: Uuid,
     pub to_uuid: Option<Uuid>,
-    pub content_type: String,
+    pub content_type: ContentType,
     #[sea_orm(column_type = "Blob")]
     pub content: Vec<u8>,
     pub received: bool,

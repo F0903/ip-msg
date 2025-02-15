@@ -23,10 +23,10 @@ tauri-build = { version = "2", features = [] }
 [workspace.dependencies]
 tokio = { version = "1", features = ["full"] }
 uuid = { version = "*", features = ["v4"] }
-
+entity = { path = "entity" }
 
 [dependencies]
-entity = { path = "entity" }
+entity = { workspace = true }
 migration = { path = "migration" }
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"

@@ -15,7 +15,7 @@
 </script>
 
 <button class="icon-button" {onclick}>
-  <Fa {icon} style="height: 100%" />
+  <Fa {icon} style="flex-shrink: 1; flex-grow: 1;" />
   {#if text}
     <span class="button-text">{text}</span>
   {/if}
@@ -28,9 +28,6 @@
   }
 
   .icon-button {
-    aspect-ratio: 1/1;
-
-    height: var(--button-height, 100%);
     background-color: var(--button-background-color, transparent);
     border: none;
     border-radius: var(--button-border-radius, 10px);
@@ -38,9 +35,16 @@
 
     color: var(--button-color, var(--tertiary-color));
 
+    height: var(--button-height, 50px);
+    width: var(--button-width);
+    aspect-ratio: var(--button-aspect-ratio);
+
+    box-sizing: border-box;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 5px;
   }
 </style>

@@ -16,6 +16,8 @@
         off_icon={faBars}
         on_icon={faArrowLeft}
         bind:toggled={menuToggled}
+        --button-height="100%"
+        --button-aspect-ratio="1/1"
       />
     {/snippet}
     {#snippet center()}

@@ -10,7 +10,8 @@ path = "src/lib.rs"
 
 [dependencies]
 tokio = { workspace = true }
-uuid = { workspace = true }  # Required for new-v4 method
+uuid = { workspace = true }   # Required for new-v4 method
+entity = { workspace = true }
 
 [dependencies.sea-orm-migration]
 version = "1.1.0"

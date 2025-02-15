@@ -2,6 +2,7 @@ use dotenv_codegen::dotenv;
 use migration::{Migrator, MigratorTrait};
 
 mod commands;
+mod services;
 mod utils;
 
 pub struct AppState {
@@ -12,10 +13,10 @@ pub struct AppState {
 pub async fn run() -> anyhow::Result<()> {
     log::info!("Starting app...");
 
-    log::info!("Running migration...");
+    log::info!("Setting up database...");
     let db = sea_orm::Database::connect(dotenv!("DATABASE_URL")).await?;
     Migrator::up(&db, None).await?;
-    log::info!("Done migrating");
+    log::info!("Done setting up database");
 
     log::info!("Setting up tauri...");
     tauri::Builder::default()
