@@ -1,8 +1,10 @@
 [package]
 name = "migration"
-version = "0.1.0"
-edition = "2021"
+description = "SeaORM migrations for ip-msg"
 publish = false
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
 
 [lib]
 name = "migration"

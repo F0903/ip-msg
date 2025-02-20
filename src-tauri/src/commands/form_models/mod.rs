@@ -1,3 +1,5 @@
+// The objects that the frontend uses to communicate with the backend.
+
 mod contact_form;
 mod message_form;
 

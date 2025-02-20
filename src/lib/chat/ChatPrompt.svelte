@@ -1,15 +1,26 @@
 <script lang="ts">
   import IconButton from "$lib/IconButton.svelte";
   import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
-  import { invoke } from "@tauri-apps/api/core";
+  import { sendMessage } from "$lib/api/messages";
+  import { invalidateAll } from "$app/navigation";
+
+  let { to_uuid }: { to_uuid: string } = $props();
 
   let inputElement: HTMLInputElement | undefined;
 
-  function onsubmit(event: SubmitEvent) {
+  async function onsubmit(event: SubmitEvent) {
     event.preventDefault();
 
     const chatInput = inputElement!.value;
     console.log("chat input submit value: ", chatInput);
+    console.log("chat contact uuid: ", to_uuid);
+
+    await sendMessage({
+      to_uuid: to_uuid,
+      content_type: "Text",
+      content: new TextEncoder().encode(chatInput),
+    });
+    await invalidateAll(); //temporary solution
   }
 </script>
 

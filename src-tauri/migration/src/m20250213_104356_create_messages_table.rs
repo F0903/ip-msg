@@ -14,7 +14,7 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(pk_auto(Message::Id))
                     .col(uuid(Message::FromUUID))
-                    .col(uuid_null(Message::ToUUID).null())
+                    .col(uuid(Message::ToUUID))
                     .col(
                         ColumnDef::new_with_type(ContentType::name(), ContentType::column_type())
                             .not_null()
@@ -22,7 +22,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(blob(Message::Content))
                     .col(boolean(Message::Received))
-                    .col(text_null(Message::Signature))
+                    .col(date_time(Message::SentAt))
                     .to_owned(),
             )
             .await
@@ -43,5 +43,5 @@ enum Message {
     ToUUID,
     Content,
     Received,
-    Signature,
+    SentAt,
 }

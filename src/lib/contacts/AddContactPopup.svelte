@@ -4,9 +4,9 @@
   import IconButton from "../IconButton.svelte";
   import Input from "../Input.svelte";
   import Overlay from "../Overlay.svelte";
-  import { invoke } from "@tauri-apps/api/core";
-  import type { ContactForm } from "$lib/models/Contact";
+  import type { ContactForm } from "$lib/api/models/Contact";
   import { invalidateAll } from "$app/navigation";
+  import { addContact } from "$lib/api/contacts";
 
   let addContactPopup: Overlay | undefined;
   let contactForm: Form | undefined;
@@ -15,8 +15,8 @@
     addContactPopup!.show();
   }
 
-  async function on_submit(data: ContactForm) {
-    await invoke("add_contact", { contact: data });
+  async function on_submit(contact: ContactForm) {
+    await addContact(contact);
     addContactPopup!.close();
     await invalidateAll(); // We need to invalidate the cache to update the contacts list
   }

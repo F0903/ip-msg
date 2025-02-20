@@ -14,7 +14,7 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(pk_uuid(Contact::UUID))
                     .col(string_uniq(Contact::Name))
-                    .col(string_uniq(Contact::IPAddress))
+                    .col(string_uniq(Contact::IPAddress).comment("CHANGE TO IpAddress"))
                     .to_owned(),
             )
             .await?;

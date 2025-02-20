@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum MessageError {
+pub enum Error {
     #[error("network error")]
     Network(#[from] std::io::Error),
     #[error("serialization error")]
@@ -9,3 +9,5 @@ pub enum MessageError {
     #[error("database error")]
     Database(#[from] sea_orm::DbErr),
 }
+
+pub type Result<T> = std::result::Result<T, Error>;

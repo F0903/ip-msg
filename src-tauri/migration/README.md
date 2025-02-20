@@ -3,6 +3,7 @@
 This directory houses the SeaORM migrations, they can be run as follows:
 
 > **IMPORTANT:** a .env file in the the **src-tauri** directory with a ``DATABASE_URL`` variable must be defined for this to work.
+> I recommend using a simple local SQLite database like so: ``DATABASE_URL=sqlite://db.sqlite?mode=rwc``
 
 ## Via sea-orm-cli
 

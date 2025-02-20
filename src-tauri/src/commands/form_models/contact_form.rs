@@ -1,8 +1,6 @@
-use entity::contact::ActiveModel;
+use entity::{contact::ActiveModel, ip_address::IpAddress};
 use sea_orm::DeriveIntoActiveModel;
 use serde::Deserialize;
-
-use crate::utils::IpAddress;
 
 #[derive(DeriveIntoActiveModel, Deserialize)]
 pub struct ContactForm {

@@ -3,7 +3,7 @@
   import PopoutShelf from "$lib/PopoutShelf.svelte";
   import { faAdd, faPerson } from "@fortawesome/free-solid-svg-icons";
   import AddContactPopup from "./AddContactPopup.svelte";
-  import type { Contact } from "$lib/models/Contact";
+  import type { Contact } from "$lib/api/models/Contact";
   import { goto } from "$app/navigation";
   import Divider from "$lib/Divider.svelte";
 

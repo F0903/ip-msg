@@ -11,13 +11,12 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub from_uuid: Uuid,
-    pub to_uuid: Option<Uuid>,
+    pub to_uuid: Uuid,
     pub content_type: ContentType,
     #[sea_orm(column_type = "Blob")]
     pub content: Vec<u8>,
     pub received: bool,
-    #[sea_orm(column_type = "Text", nullable)]
-    pub signature: Option<String>,
+    pub sent_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

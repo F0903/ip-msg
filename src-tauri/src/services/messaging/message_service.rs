@@ -1,43 +1,57 @@
-use super::{message_error::MessageError, Message, TextMessage};
+use super::Message;
+use crate::services::contacts::ContactsService;
 use entity::message;
-use sea_orm::prelude::ActiveModelTrait;
-use sea_orm::{DatabaseConnection, IntoActiveModel, Set};
-use std::sync::Arc;
+use sea_orm::{
+    ActiveValue::NotSet, Condition, DatabaseConnection, QueryOrder, Set, prelude::*,
+    sqlx::types::chrono::Utc,
+};
+use std::{
+    net::{IpAddr, SocketAddr},
+    sync::Arc,
+};
 use tokio::{net::UdpSocket, task::JoinHandle};
+use uuid::Uuid;
 
-type Result<T> = std::result::Result<T, MessageError>;
+pub const DEFAULT_MESSAGE_PORT: u16 = 45000;
 
 pub struct MessageService {
     listening_task: Option<JoinHandle<()>>,
     net: Arc<UdpSocket>,
     db: DatabaseConnection,
+    contacts: Arc<ContactsService>,
 }
 
-//TODO: implement sending messages
-//TODO: verify message database design
 impl MessageService {
-    pub async fn start(db: &DatabaseConnection) -> Result<Self> {
-        let net = UdpSocket::bind("0.0.0.0:45000").await?;
+    pub async fn start(
+        db: DatabaseConnection,
+        contacts: Arc<ContactsService>,
+    ) -> crate::Result<Self> {
+        log::info!("Setting up message service...");
+        let net = UdpSocket::bind(format!("0.0.0.0:{}", DEFAULT_MESSAGE_PORT)).await?;
 
         let mut this = Self {
             listening_task: None,
             net: Arc::new(net),
-            db: db.clone(), // We can clone it because it's an Arc to a Sqlx pool internally.
+            db: db.clone(),
+            contacts,
         };
 
         this.listen().await?;
+        log::info!("Done setting up message service");
 
         Ok(this)
     }
 
-    async fn listen(&mut self) -> Result<()> {
+    async fn listen(&mut self) -> crate::Result<()> {
+        log::info!("Started listening for messages...");
         let net = Arc::clone(&self.net);
+        let contacts = Arc::clone(&self.contacts);
         let db = self.db.clone(); // We can clone it because it's an Arc to a Sqlx pool internally.
 
         let mut buf = [0; 1024];
         let task = tokio::spawn(async move {
             loop {
-                let count = match net.recv(&mut buf).await {
+                let (len, remote) = match net.recv_from(&mut buf).await {
                     Ok(x) => x,
                     Err(e) => {
                         log::error!("Error while reading from message socket! {:?}", e);
@@ -45,8 +59,8 @@ impl MessageService {
                     }
                 };
 
-                let data = &buf[..count];
-                match Self::process_data(data, &db).await {
+                let data = &buf[..len];
+                match Self::process_remote_data(data, remote, &db, &contacts).await {
                     Ok(_) => (),
                     Err(e) => {
                         log::error!("Error occurred while processing incoming data! {:?}", e);
@@ -56,31 +70,95 @@ impl MessageService {
             }
         });
         self.listening_task = Some(task);
+        log::info!("Stopped listening for messages.");
 
         Ok(())
     }
 
-    async fn process_data(data: &[u8], db: &DatabaseConnection) -> Result<()> {
+    async fn process_remote_data(
+        data: &[u8],
+        remote: SocketAddr,
+        db: &DatabaseConnection,
+        contacts: &ContactsService,
+    ) -> crate::Result<()> {
         let message: Message = serde_json::from_slice::<Message>(data)?;
-        match message {
-            Message::Text(message) => Self::handle_text_message(message, db).await?,
-        }
+        log::debug!("Handling received message: {:?}", message);
 
-        Ok(())
-    }
+        let contact = contacts.get_with_ip(remote.ip()).await?;
+        let self_contact = contacts.get_self().await?;
 
-    async fn handle_text_message(message: TextMessage, db: &DatabaseConnection) -> Result<()> {
         message::ActiveModel {
-            from_uuid: Set(message.from_uuid),
-            content_type: Set(entity::content_type::ContentType::Text),
-            content: Set(message.text.into_bytes()),
-            ..Default::default()
+            id: NotSet,
+            from_uuid: Set(contact.uuid),
+            to_uuid: Set(self_contact.uuid),
+            content_type: Set(message.content_type),
+            content: Set(message.content),
+            received: Set(true),
+            sent_at: Set(message.sent_at.naive_utc()),
         }
         .save(db)
         .await?;
+        log::debug!("Wrote incoming message to db");
 
         //TODO: notify frontend
 
         Ok(())
+    }
+
+    pub async fn send_message(&self, message: Message, to: Uuid) -> crate::Result<()> {
+        let self_contact = self.contacts.get_self().await?;
+
+        let receiver = self.contacts.get_with_uuid(to).await?;
+        self.net
+            .send_to(
+                &message.content,
+                (
+                    Into::<IpAddr>::into(receiver.ip_address),
+                    DEFAULT_MESSAGE_PORT,
+                ),
+            )
+            .await?;
+
+        // Save message to db
+        entity::message::ActiveModel {
+            id: NotSet,
+            to_uuid: Set(to),
+            from_uuid: Set(self_contact.uuid),
+            content_type: Set(message.content_type),
+            content: Set(message.content),
+            received: Set(false),
+            sent_at: Set(Utc::now().naive_utc()),
+        }
+        .save(&self.db)
+        .await?;
+
+        Ok(())
+    }
+
+    /// Gets messages from local user to uuid
+    pub async fn get_correspondence(&self, to_uuid: Uuid) -> crate::Result<Vec<Message>> {
+        let self_contact = self.contacts.get_self().await?;
+
+        // Is true for outgoing messages to the contact, or incoming messages from the contact
+        let correspondence_condition = Condition::any()
+            .add(
+                Condition::all()
+                    .add(message::Column::FromUuid.eq(to_uuid))
+                    .add(message::Column::ToUuid.eq(self_contact.uuid)),
+            )
+            .add(
+                Condition::all()
+                    .add(message::Column::FromUuid.eq(self_contact.uuid))
+                    .add(message::Column::ToUuid.eq(to_uuid)),
+            );
+
+        let db_messages = message::Entity::find()
+            .filter(correspondence_condition)
+            .order_by(message::Column::SentAt, sea_orm::Order::Desc)
+            .all(&self.db)
+            .await?;
+
+        let messages = db_messages.iter().map(Into::into).collect();
+        Ok(messages)
     }
 }

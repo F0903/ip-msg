@@ -1,3 +1,3 @@
-mod ip_address;
+mod map_err_to_string;
 
-pub use ip_address::IpAddress;
+pub use map_err_to_string::MapErrToString;

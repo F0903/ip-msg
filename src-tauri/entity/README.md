@@ -5,6 +5,7 @@ This directory houses the SeaORM entities. These are generated via ``sea-orm-cli
 ## Generating entities
 
 > **IMPORTANT:** a .env file in the the **src-tauri** directory with a ``DATABASE_URL`` variable must be defined for this to work.
+> I recommend using a simple local SQLite database like so: ``DATABASE_URL=sqlite://db.sqlite?mode=rwc``
 
 To generate entities, use the following command:
 

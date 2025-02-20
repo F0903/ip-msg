@@ -1,14 +1,18 @@
-use dotenv_codegen::dotenv;
-use migration::{Migrator, MigratorTrait};
-use sea_orm::ConnectOptions;
-use services::messaging::MessageService;
-
 mod commands;
+mod error;
 mod services;
 mod utils;
 
+pub use error::{Error, Result};
+
+use dotenv_codegen::dotenv;
+use migration::{Migrator, MigratorTrait};
+use sea_orm::ConnectOptions;
+use services::{contacts::ContactsService, messaging::MessageService};
+use std::sync::Arc;
+
 pub struct AppState {
-    db: sea_orm::DatabaseConnection,
+    contacts: Arc<ContactsService>,
     messages: MessageService,
 }
 
@@ -24,19 +28,22 @@ pub async fn run() -> anyhow::Result<()> {
     )
     .await?;
     Migrator::up(&db, None).await?;
-    log::info!("Done setting up database");
 
-    log::info!("Setting up message service...");
-    let messages = MessageService::start(&db).await?;
-    log::info!("Done setting up message service");
+    log::info!("Setting up app state...");
+    let contacts = Arc::new(ContactsService::new(db.clone()));
+    let messages = MessageService::start(db, Arc::clone(&contacts)).await?;
+    let state = AppState {
+        // We can clone the db because it's an Arc to a Sqlx pool internally.
+        contacts,
+        messages,
+    };
 
     log::info!("Setting up tauri...");
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(commands::get_handler())
-        .manage(AppState { db, messages })
+        .manage(state)
         .run(tauri::generate_context!())?;
-    log::info!("Done setting up tauri");
 
     Ok(())
 }
