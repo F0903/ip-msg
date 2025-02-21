@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 // The object that represents messages that are both sent and received over the network
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Message {
     pub remote_uuid: Uuid,
     pub content_type: ContentType,

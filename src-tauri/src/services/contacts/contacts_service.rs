@@ -25,7 +25,9 @@ impl ContactsService {
             .get_or_init(|| async {
                 self.get_with_name("Self")
                     .await
-                    .expect("Could not find 'Self' contact in database!")
+                    .expect("Error occurred in 'get_self'")
+                    .ok_or("Could not find 'Self' contact in database!")
+                    .unwrap()
             })
             .await;
 
@@ -38,42 +40,33 @@ impl ContactsService {
         Ok(contacts)
     }
 
-    pub async fn get_with_name(&self, name: impl Into<String>) -> crate::Result<contact::Model> {
+    pub async fn get_with_name(
+        &self,
+        name: impl Into<String>,
+    ) -> crate::Result<Option<contact::Model>> {
         let name = name.into();
         let contact = contact::Entity::find()
             .filter(contact::Column::Name.eq(&name))
             .one(&self.db)
-            .await?
-            .ok_or(DbErr::RecordNotFound(format!(
-                "contact with name '{}' not found",
-                name
-            )))?;
+            .await?;
 
         Ok(contact)
     }
 
-    pub async fn get_with_ip(&self, ip: IpAddr) -> crate::Result<contact::Model> {
+    pub async fn get_with_ip(&self, ip: IpAddr) -> crate::Result<Option<contact::Model>> {
         let contact = contact::Entity::find()
             .filter(contact::Column::IpAddress.eq(Into::<IpAddress>::into(ip)))
             .one(&self.db)
-            .await?
-            .ok_or(DbErr::RecordNotFound(format!(
-                "contact with ip '{}' not found",
-                ip
-            )))?;
+            .await?;
 
         Ok(contact)
     }
 
-    pub async fn get_with_uuid(&self, uuid: Uuid) -> crate::Result<contact::Model> {
+    pub async fn get_with_uuid(&self, uuid: Uuid) -> crate::Result<Option<contact::Model>> {
         let contact = contact::Entity::find()
             .filter(contact::Column::Uuid.eq(uuid))
             .one(&self.db)
-            .await?
-            .ok_or(DbErr::RecordNotFound(format!(
-                "contact with uuid '{}' not found",
-                uuid
-            )))?;
+            .await?;
 
         Ok(contact)
     }

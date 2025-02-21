@@ -1,13 +1,35 @@
 <script lang="ts">
-  import type { Message } from "$lib/api/models/Message.js";
+  import { Message } from "$lib/api/models/Message.js";
   import ChatBubble from "$lib/chat/ChatBubble.svelte";
   import ChatPrompt from "$lib/chat/ChatPrompt.svelte";
+  import { listen, type UnlistenFn } from "@tauri-apps/api/event";
+  import { onDestroy, onMount } from "svelte";
 
   let { data } = $props();
 
   let messages: Message[] = $state(data.messages);
 
   const textDecoder = new TextDecoder();
+
+  // We need a variable to keep track of unlisten functions, as we can't return them from onMount due to the callback being async.
+  let unlistenEvents: UnlistenFn[] = [];
+
+  onMount(async () => {
+    const unlisten = await listen("message-received", (message: any) => {
+      const msg = new Message().deserialize(message);
+      if (msg.remote_uuid == data.to_uuid) {
+        messages.push(msg);
+      }
+    });
+
+    unlistenEvents.push(unlisten);
+  });
+
+  onDestroy(() => {
+    for (const unlisten of unlistenEvents) {
+      unlisten();
+    }
+  });
 </script>
 
 <main class="chat">

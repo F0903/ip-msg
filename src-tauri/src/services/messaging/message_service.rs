@@ -9,6 +9,7 @@ use std::{
     net::{IpAddr, SocketAddr},
     sync::Arc,
 };
+use tauri::{AppHandle, Emitter};
 use tokio::{net::UdpSocket, task::JoinHandle};
 use uuid::Uuid;
 
@@ -19,12 +20,14 @@ pub struct MessageService {
     net: Arc<UdpSocket>,
     db: DatabaseConnection,
     contacts: Arc<ContactsService>,
+    app_handle: AppHandle,
 }
 
 impl MessageService {
     pub async fn start(
         db: DatabaseConnection,
         contacts: Arc<ContactsService>,
+        app_handle: AppHandle,
     ) -> crate::Result<Self> {
         log::info!("Setting up message service...");
         let net = UdpSocket::bind(format!("0.0.0.0:{}", DEFAULT_MESSAGE_PORT)).await?;
@@ -34,6 +37,7 @@ impl MessageService {
             net: Arc::new(net),
             db: db.clone(),
             contacts,
+            app_handle,
         };
 
         this.listen().await?;
@@ -47,6 +51,7 @@ impl MessageService {
         let net = Arc::clone(&self.net);
         let contacts = Arc::clone(&self.contacts);
         let db = self.db.clone(); // We can clone it because it's an Arc to a Sqlx pool internally.
+        let app_handle = self.app_handle.clone();
 
         let mut buf = [0; 1024];
         let task = tokio::spawn(async move {
@@ -60,7 +65,7 @@ impl MessageService {
                 };
 
                 let data = &buf[..len];
-                match Self::process_remote_data(data, remote, &db, &contacts).await {
+                match Self::process_remote_data(data, remote, &db, &contacts, &app_handle).await {
                     Ok(_) => (),
                     Err(e) => {
                         log::error!("Error occurred while processing incoming data! {:?}", e);
@@ -80,19 +85,22 @@ impl MessageService {
         remote: SocketAddr,
         db: &DatabaseConnection,
         contacts: &ContactsService,
+        app_handle: &AppHandle,
     ) -> crate::Result<()> {
         let message: Message = serde_json::from_slice::<Message>(data)?;
         log::debug!("Handling received message: {:?}", message);
 
         let contact = contacts.get_with_ip(remote.ip()).await?;
+        //TODO: if contact does not exist, create one
+
         let self_contact = contacts.get_self().await?;
 
         message::ActiveModel {
             id: NotSet,
-            from_uuid: Set(contact.uuid),
-            to_uuid: Set(self_contact.uuid),
-            content_type: Set(message.content_type),
-            content: Set(message.content),
+            from_uuid: Set(contact.uuid.clone()),
+            to_uuid: Set(self_contact.uuid.clone()),
+            content_type: Set(message.content_type.clone()),
+            content: Set(message.content.clone()),
             received: Set(true),
             sent_at: Set(message.sent_at.naive_utc()),
         }
@@ -100,7 +108,8 @@ impl MessageService {
         .await?;
         log::debug!("Wrote incoming message to db");
 
-        //TODO: notify frontend
+        // Notify frontend
+        app_handle.emit("message-received", message)?;
 
         Ok(())
     }
