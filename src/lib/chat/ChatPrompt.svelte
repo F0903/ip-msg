@@ -12,15 +12,14 @@
     event.preventDefault();
 
     const chatInput = inputElement!.value;
-    console.log("chat input submit value: ", chatInput);
-    console.log("chat contact uuid: ", to_uuid);
-
     await sendMessage({
       to_uuid: to_uuid,
       content_type: "Text",
       content: new TextEncoder().encode(chatInput),
     });
-    await invalidateAll(); //temporary solution
+
+    inputElement!.value = "";
+    await invalidateAll();
   }
 </script>
 

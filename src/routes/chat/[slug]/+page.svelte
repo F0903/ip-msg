@@ -19,19 +19,23 @@
   let unlistenEvents: UnlistenFn[] = [];
 
   onMount(async () => {
-    const unlisten_received = await listen("message-received", (data: any) => {
-      const msg = new Message().deserialize(data);
-      if (msg.from_uuid == data.to_uuid) {
-        messages.push(msg);
+    const unlisten_received = await listen(
+      "message-received",
+      async (data: any) => {
+        const msg = new Message().deserialize(data);
+        if (msg.from_uuid == data.to_uuid) {
+          messages.push(msg);
+        }
+
+        await invalidateAll();
       }
-    });
+    );
 
     const unlisten_contact_uuid_changed = await listen(
       "contact-uuid-changed",
       async (data: any) => {
         let contactChanges = data as ContactUuidChangedEvent;
 
-        // Invalidate all for now, but later on it would be better to only invalidate the specific contact. (we also need to make sure the contact list buttons update)
         await invalidateAll();
       }
     );

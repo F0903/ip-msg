@@ -16,7 +16,7 @@
 
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    console.log(data);
+
     on_submit(data);
   }
 
