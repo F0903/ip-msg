@@ -12,7 +12,8 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Contact::Table)
                     .if_not_exists()
-                    .col(pk_uuid(Contact::UUID))
+                    .col(pk_auto(Contact::Id))
+                    .col(uuid_uniq(Contact::UUID))
                     .col(string_uniq(Contact::Name))
                     .col(string_uniq(Contact::IPAddress).comment("CHANGE TO IpAddress"))
                     .to_owned(),
@@ -43,6 +44,7 @@ impl MigrationTrait for Migration {
 #[derive(DeriveIden)]
 enum Contact {
     Table,
+    Id,
     UUID,
     Name,
     IPAddress,

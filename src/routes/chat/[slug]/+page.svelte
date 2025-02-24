@@ -11,7 +11,7 @@
 
   let { data } = $props();
 
-  let messages: Message[] = $state(data.messages);
+  let messages: Message[] = $derived(data.messages);
 
   const textDecoder = new TextDecoder();
 

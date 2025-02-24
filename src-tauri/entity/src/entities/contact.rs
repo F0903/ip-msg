@@ -8,7 +8,9 @@ use crate::ip_address::IpAddress;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "contact")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
+    #[sea_orm(primary_key)]
+    pub id: i32,
+    #[sea_orm(unique)]
     pub uuid: Uuid,
     #[sea_orm(unique)]
     pub name: String,

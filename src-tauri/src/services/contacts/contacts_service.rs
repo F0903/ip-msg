@@ -1,5 +1,9 @@
 use entity::{contact, ip_address::IpAddress};
-use sea_orm::{ActiveValue::Set, DatabaseConnection, TryIntoModel, prelude::*};
+use sea_orm::{
+    ActiveValue::{NotSet, Set},
+    DatabaseConnection, TryIntoModel,
+    prelude::*,
+};
 use std::net::IpAddr;
 use tokio::sync::OnceCell;
 
@@ -74,6 +78,7 @@ impl ContactsService {
                 log::info!("Contact with ip '{}' not found, creating...", ip);
                 let added_contact = self
                     .insert_contact(contact::ActiveModel {
+                        id: NotSet,
                         uuid: Set(with_uuid.unwrap_or_else(Uuid::new_v4)),
                         name: Set(ip.to_string()),
                         ip_address: Set(ip.into()),
