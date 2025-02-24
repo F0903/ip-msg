@@ -7,7 +7,7 @@ export const load: PageLoad = async ({ params }) => {
   const messages = await getCorrespondence(to_uuid);
 
   return {
-    to_uuid: to_uuid,
+    toUuid: to_uuid,
     messages: messages,
   };
 };

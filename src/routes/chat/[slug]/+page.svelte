@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { invalidateAll } from "$app/navigation";
+  import { goto, invalidateAll } from "$app/navigation";
   import {
     Message,
     type ContactUuidChangedEvent,
@@ -21,9 +21,9 @@
   onMount(async () => {
     const unlisten_received = await listen(
       "message-received",
-      async (data: any) => {
-        const msg = new Message().deserialize(data);
-        if (msg.from_uuid == data.to_uuid) {
+      async (eventData: any) => {
+        const msg = new Message().deserialize(eventData);
+        if (msg.from_uuid === data.toUuid) {
           messages.push(msg);
         }
 
@@ -33,10 +33,11 @@
 
     const unlisten_contact_uuid_changed = await listen(
       "contact-uuid-changed",
-      async (data: any) => {
-        let contactChanges = data as ContactUuidChangedEvent;
-
-        await invalidateAll();
+      async (eventData: any) => {
+        let contactChanges = eventData as ContactUuidChangedEvent;
+        if (data.toUuid === contactChanges.old_uuid) {
+          await goto(`/chat/${contactChanges.new_uuid}`);
+        }
       }
     );
 
@@ -61,7 +62,7 @@
     </div>
   </div>
   <div class="bottom">
-    <ChatPrompt to_uuid={data.to_uuid} />
+    <ChatPrompt to_uuid={data.toUuid} />
   </div>
 </main>
 
