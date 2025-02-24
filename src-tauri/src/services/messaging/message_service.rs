@@ -107,6 +107,20 @@ impl MessageService {
             let updated_contact = contacts.update_contact(active_contact).await?;
             contact = updated_contact.try_into_model()?;
 
+            // Set entities with the old FROM uuid to the new FROM uuid
+            message::Entity::update_many()
+                .col_expr(message::Column::FromUuid, Expr::value(contact.uuid))
+                .filter(message::Column::FromUuid.eq(old_contact.uuid))
+                .exec(db)
+                .await?;
+
+            // Set entities with the old TO uuid to the new TO uuid
+            message::Entity::update_many()
+                .col_expr(message::Column::ToUuid, Expr::value(contact.uuid))
+                .filter(message::Column::ToUuid.eq(old_contact.uuid))
+                .exec(db)
+                .await?;
+
             // Notify frontend
             app_handle.emit(
                 "contact-uuid-changed",
