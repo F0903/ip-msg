@@ -3,6 +3,7 @@ use crate::{
     AppState, commands::CommandResult, services::messaging::Message, utils::MapErrToString,
 };
 use chrono::Utc;
+use entity::message;
 use tauri::State;
 use uuid::Uuid;
 
@@ -10,9 +11,9 @@ use uuid::Uuid;
 pub async fn send_message(
     state: State<'_, AppState>,
     message_form: SendMessageForm,
-) -> CommandResult<()> {
+) -> CommandResult<message::Model> {
     let self_contact = state.contacts.get_self().await.map_err_to_string()?;
-    state
+    let sent_message = state
         .messages
         .send_message(
             Message {
@@ -26,14 +27,14 @@ pub async fn send_message(
         .await
         .map_err_to_string()?;
 
-    Ok(())
+    Ok(sent_message)
 }
 
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_correspondence(
     state: State<'_, AppState>,
     to_uuid: Uuid,
-) -> CommandResult<Vec<Message>> {
+) -> CommandResult<Vec<message::Model>> {
     let messages = state
         .messages
         .get_correspondence(to_uuid)

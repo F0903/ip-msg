@@ -61,15 +61,20 @@ impl ContactsService {
         Ok(contact)
     }
 
-    pub async fn get_or_create_with_ip(&self, ip: IpAddr) -> crate::Result<contact::Model> {
+    pub async fn get_or_create_with_ip(
+        &self,
+        ip: IpAddr,
+        with_uuid: Option<Uuid>,
+    ) -> crate::Result<contact::Model> {
         let contact = self.get_with_ip(ip).await?;
 
         match contact {
             Some(contact) => Ok(contact),
             None => {
+                log::info!("Contact with ip '{}' not found, creating...", ip);
                 let added_contact = self
-                    .save(contact::ActiveModel {
-                        uuid: Set(Uuid::new_v4()),
+                    .insert_contact(contact::ActiveModel {
+                        uuid: Set(with_uuid.unwrap_or_else(Uuid::new_v4)),
                         name: Set(ip.to_string()),
                         ip_address: Set(ip.into()),
                     })
@@ -89,8 +94,22 @@ impl ContactsService {
         Ok(contact)
     }
 
-    pub async fn save(&self, contact: contact::ActiveModel) -> crate::Result<contact::ActiveModel> {
-        let added_contact = contact.save(&self.db).await?;
+    pub async fn update_contact(
+        &self,
+        contact: contact::ActiveModel,
+    ) -> crate::Result<contact::ActiveModel> {
+        log::info!("Updating contact: {:?}", contact);
+        let updated_contact = contact.save(&self.db).await?;
+
+        Ok(updated_contact)
+    }
+
+    pub async fn insert_contact(
+        &self,
+        contact: contact::ActiveModel,
+    ) -> crate::Result<contact::Model> {
+        log::info!("Inserting contact: {:?}", contact);
+        let added_contact = contact.insert(&self.db).await?;
 
         Ok(added_contact)
     }

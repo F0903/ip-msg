@@ -1,9 +1,9 @@
 use super::{Message, MessageError};
-use crate::services::contacts::ContactsService;
+use crate::services::{contacts::ContactsService, messaging::event_payloads::ContactUuidChanged};
 use entity::message;
 use sea_orm::{
-    ActiveValue::NotSet, Condition, DatabaseConnection, QueryOrder, Set, prelude::*,
-    sqlx::types::chrono::Utc,
+    ActiveValue::NotSet, Condition, DatabaseConnection, IntoActiveModel, QueryOrder, Set,
+    TryIntoModel, prelude::*, sqlx::types::chrono::Utc,
 };
 use std::{
     net::{IpAddr, SocketAddr},
@@ -90,8 +90,31 @@ impl MessageService {
         let message: Message = serde_json::from_slice::<Message>(data)?;
         log::debug!("Handling received message: {:?}", message);
 
-        let contact = contacts.get_or_create_with_ip(remote.ip()).await?;
+        let mut contact = contacts
+            .get_or_create_with_ip(remote.ip(), Some(message.remote_uuid))
+            .await?;
         let self_contact = contacts.get_self().await?;
+
+        // Update local contact uuid to the remote uuid if it's different
+        if contact.uuid != message.remote_uuid {
+            log::info!("Remote contact UUID changed, updating local contact...");
+            let old_contact = contact.clone();
+
+            let mut active_contact = contact.into_active_model();
+            active_contact.uuid = Set(message.remote_uuid);
+
+            let updated_contact = contacts.update_contact(active_contact).await?;
+            contact = updated_contact.try_into_model()?;
+
+            // Notify frontend
+            app_handle.emit(
+                "contact-uuid-changed",
+                ContactUuidChanged {
+                    old_uuid: old_contact.uuid,
+                    new_uuid: contact.uuid,
+                },
+            )?;
+        }
 
         message::ActiveModel {
             id: NotSet,
@@ -112,7 +135,7 @@ impl MessageService {
         Ok(())
     }
 
-    pub async fn send_message(&self, message: Message, to: Uuid) -> crate::Result<()> {
+    pub async fn send_message(&self, message: Message, to: Uuid) -> crate::Result<message::Model> {
         let self_contact = self.contacts.get_self().await?;
 
         let receiver = self
@@ -132,7 +155,7 @@ impl MessageService {
             .await?;
 
         // Save message to db
-        entity::message::ActiveModel {
+        let active_sent_msg = entity::message::ActiveModel {
             id: NotSet,
             to_uuid: Set(to),
             from_uuid: Set(self_contact.uuid),
@@ -144,11 +167,13 @@ impl MessageService {
         .save(&self.db)
         .await?;
 
-        Ok(())
+        let sent_message = active_sent_msg.try_into_model()?.into();
+
+        Ok(sent_message)
     }
 
     /// Gets messages from local user to uuid
-    pub async fn get_correspondence(&self, to_uuid: Uuid) -> crate::Result<Vec<Message>> {
+    pub async fn get_correspondence(&self, to_uuid: Uuid) -> crate::Result<Vec<message::Model>> {
         let self_contact = self.contacts.get_self().await?;
 
         // Is true for outgoing messages to the contact, or incoming messages from the contact
@@ -164,13 +189,12 @@ impl MessageService {
                     .add(message::Column::ToUuid.eq(to_uuid)),
             );
 
-        let db_messages = message::Entity::find()
+        let messages = message::Entity::find()
             .filter(correspondence_condition)
             .order_by(message::Column::SentAt, sea_orm::Order::Desc)
             .all(&self.db)
             .await?;
 
-        let messages = db_messages.iter().map(Into::into).collect();
         Ok(messages)
     }
 }

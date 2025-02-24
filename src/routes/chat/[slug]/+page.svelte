@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { Message } from "$lib/api/models/Message.js";
+  import { invalidateAll } from "$app/navigation";
+  import {
+    Message,
+    type ContactUuidChangedEvent,
+  } from "$lib/api/models/Message.js";
   import ChatBubble from "$lib/chat/ChatBubble.svelte";
   import ChatPrompt from "$lib/chat/ChatPrompt.svelte";
   import { listen, type UnlistenFn } from "@tauri-apps/api/event";
@@ -15,14 +19,24 @@
   let unlistenEvents: UnlistenFn[] = [];
 
   onMount(async () => {
-    const unlisten = await listen("message-received", (message: any) => {
-      const msg = new Message().deserialize(message);
-      if (msg.remote_uuid == data.to_uuid) {
+    const unlisten_received = await listen("message-received", (data: any) => {
+      const msg = new Message().deserialize(data);
+      if (msg.from_uuid == data.to_uuid) {
         messages.push(msg);
       }
     });
 
-    unlistenEvents.push(unlisten);
+    const unlisten_contact_uuid_changed = await listen(
+      "contact-uuid-changed",
+      async (data: any) => {
+        let contactChanges = data as ContactUuidChangedEvent;
+
+        // Invalidate all for now, but later on it would be better to only invalidate the specific contact. (we also need to make sure the contact list buttons update)
+        await invalidateAll();
+      }
+    );
+
+    unlistenEvents.push(unlisten_received, unlisten_contact_uuid_changed);
   });
 
   onDestroy(() => {
@@ -36,7 +50,7 @@
   <div class="top">
     <div class="chat-messages">
       {#each messages as message}
-        <ChatBubble outgoing={message.remote_uuid == data.selfContact.uuid}>
+        <ChatBubble outgoing={message.from_uuid === data.selfContact.uuid}>
           <span>{textDecoder.decode(message.content)}</span>
         </ChatBubble>
       {/each}
