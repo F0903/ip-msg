@@ -28,6 +28,7 @@
   <input
     name="input"
     type="text"
+    autocomplete="off"
     class="chatprompt-input"
     bind:this={inputElement}
   />
