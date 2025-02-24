@@ -47,7 +47,6 @@ impl MessageService {
     }
 
     async fn listen(&mut self) -> crate::Result<()> {
-        log::info!("Started listening for messages...");
         let net = Arc::clone(&self.net);
         let contacts = Arc::clone(&self.contacts);
         let db = self.db.clone(); // We can clone it because it's an Arc to a Sqlx pool internally.
@@ -75,7 +74,8 @@ impl MessageService {
             }
         });
         self.listening_task = Some(task);
-        log::info!("Stopped listening for messages.");
+
+        log::info!("Listening for messages...");
 
         Ok(())
     }
@@ -87,8 +87,9 @@ impl MessageService {
         contacts: &ContactsService,
         app_handle: &AppHandle,
     ) -> crate::Result<()> {
+        log::debug!("Received message from: {:?}", remote);
         let message: Message = serde_json::from_slice::<Message>(data)?;
-        log::debug!("Handling received message: {:?}", message);
+        log::debug!("Deserialized received message: {:?}", message);
 
         let mut contact = contacts
             .get_or_create_with_ip(remote.ip(), Some(message.remote_uuid))
@@ -146,7 +147,7 @@ impl MessageService {
 
         self.net
             .send_to(
-                &message.content,
+                serde_json::to_vec(&message)?.as_slice(),
                 (
                     Into::<IpAddr>::into(receiver.ip_address),
                     DEFAULT_MESSAGE_PORT,

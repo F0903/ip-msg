@@ -32,6 +32,7 @@ pub async fn run() -> anyhow::Result<()> {
 
     log::info!("Building tauri app...");
     let app = tauri::Builder::default()
+        .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(commands::get_handler())
         .build(tauri::generate_context!())?;

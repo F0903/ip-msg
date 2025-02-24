@@ -1,4 +1,4 @@
-use sea_orm::{prelude::*, ActiveValue, DeriveActiveEnum, EnumIter, IntoActiveValue};
+use sea_orm::{ActiveValue, DeriveActiveEnum, EnumIter, IntoActiveValue, prelude::*};
 use serde::{Deserialize, Serialize};
 
 #[derive(

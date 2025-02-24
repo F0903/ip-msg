@@ -16,6 +16,7 @@
     "@fontsource-variable/roboto-flex": "^5.1.1",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-log": "~2.2.2",
     "@tauri-apps/plugin-opener": "^2",
     "svelte-fa": "^4.0.3"
   },
