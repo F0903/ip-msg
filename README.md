@@ -4,7 +4,9 @@ A very much WIP peer-to-peer chat app. Written for fun and learning purposes.
 
 ## Running
 
-To build and run you can use the following options
+To build and run you need to have both [Deno](https://docs.deno.com/runtime/getting_started/installation/) and the [Rust toolchain](https://www.rust-lang.org/tools/install) installed.
+
+> Before running the launch commands, it might be neccesary to run ``deno install`` in the root project directory.
 
 ### Development
 
