@@ -1,7 +1,6 @@
-use std::net::IpAddr;
-
 use entity::{contact, ip_address::IpAddress};
-use sea_orm::{DatabaseConnection, prelude::*};
+use sea_orm::{ActiveValue::Set, DatabaseConnection, TryIntoModel, prelude::*};
+use std::net::IpAddr;
 use tokio::sync::OnceCell;
 
 pub struct ContactsService {
@@ -62,6 +61,25 @@ impl ContactsService {
         Ok(contact)
     }
 
+    pub async fn get_or_create_with_ip(&self, ip: IpAddr) -> crate::Result<contact::Model> {
+        let contact = self.get_with_ip(ip).await?;
+
+        match contact {
+            Some(contact) => Ok(contact),
+            None => {
+                let added_contact = self
+                    .save(contact::ActiveModel {
+                        uuid: Set(Uuid::new_v4()),
+                        name: Set(ip.to_string()),
+                        ip_address: Set(ip.into()),
+                    })
+                    .await?;
+
+                Ok(added_contact.try_into_model()?)
+            }
+        }
+    }
+
     pub async fn get_with_uuid(&self, uuid: Uuid) -> crate::Result<Option<contact::Model>> {
         let contact = contact::Entity::find()
             .filter(contact::Column::Uuid.eq(uuid))
@@ -71,7 +89,7 @@ impl ContactsService {
         Ok(contact)
     }
 
-    pub async fn add(&self, contact: contact::ActiveModel) -> crate::Result<contact::ActiveModel> {
+    pub async fn save(&self, contact: contact::ActiveModel) -> crate::Result<contact::ActiveModel> {
         let added_contact = contact.save(&self.db).await?;
 
         Ok(added_contact)

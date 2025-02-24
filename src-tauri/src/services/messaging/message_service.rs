@@ -1,4 +1,4 @@
-use super::Message;
+use super::{Message, MessageError};
 use crate::services::contacts::ContactsService;
 use entity::message;
 use sea_orm::{
@@ -90,9 +90,7 @@ impl MessageService {
         let message: Message = serde_json::from_slice::<Message>(data)?;
         log::debug!("Handling received message: {:?}", message);
 
-        let contact = contacts.get_with_ip(remote.ip()).await?;
-        //TODO: if contact does not exist, create one
-
+        let contact = contacts.get_or_create_with_ip(remote.ip()).await?;
         let self_contact = contacts.get_self().await?;
 
         message::ActiveModel {
@@ -117,7 +115,12 @@ impl MessageService {
     pub async fn send_message(&self, message: Message, to: Uuid) -> crate::Result<()> {
         let self_contact = self.contacts.get_self().await?;
 
-        let receiver = self.contacts.get_with_uuid(to).await?;
+        let receiver = self
+            .contacts
+            .get_with_uuid(to)
+            .await?
+            .ok_or(MessageError::SendToNonExistantContact)?;
+
         self.net
             .send_to(
                 &message.content,

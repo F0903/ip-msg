@@ -10,6 +10,8 @@ pub enum Error {
     Database(#[from] sea_orm::DbErr),
     #[error("tauri error")]
     Tauri(#[from] tauri::Error),
+    #[error("message error")]
+    Message(#[from] crate::services::messaging::MessageError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

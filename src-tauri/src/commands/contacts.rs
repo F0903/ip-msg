@@ -14,7 +14,7 @@ pub async fn add_contact(
         contact::Column::Uuid,
         Value::Uuid(Some(Box::new(Uuid::new_v4()))), // Generate the UUID
     );
-    let added_contact = state.contacts.add(contact).await.map_err_to_string()?;
+    let added_contact = state.contacts.save(contact).await.map_err_to_string()?;
 
     log::info!("Contact created: {:?}", added_contact);
 
