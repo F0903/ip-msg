@@ -1,5 +1,5 @@
 use super::{Message, MessageError};
-use crate::services::{contacts::ContactsService, messaging::event_payloads::ContactUuidChanged};
+use crate::services::contacts::ContactsService;
 use entity::message;
 use sea_orm::{
     ActiveValue::NotSet, Condition, DatabaseConnection, IntoActiveModel, QueryOrder, Set,
@@ -122,13 +122,7 @@ impl MessageService {
                 .await?;
 
             // Notify frontend
-            app_handle.emit(
-                "contact-uuid-changed",
-                ContactUuidChanged {
-                    old_uuid: old_contact.uuid,
-                    new_uuid: contact.uuid,
-                },
-            )?;
+            app_handle.emit("contact-changed", contact.clone())?;
         }
 
         message::ActiveModel {
@@ -188,20 +182,25 @@ impl MessageService {
     }
 
     /// Gets messages from local user to uuid
-    pub async fn get_correspondence(&self, to_uuid: Uuid) -> crate::Result<Vec<message::Model>> {
+    pub async fn get_correspondence(&self, to_id: i32) -> crate::Result<Vec<message::Model>> {
         let self_contact = self.contacts.get_self().await?;
+        let to_contact = self
+            .contacts
+            .get_with_id(to_id)
+            .await?
+            .ok_or(MessageError::ContactNotFound)?;
 
         // Is true for outgoing messages to the contact, or incoming messages from the contact
         let correspondence_condition = Condition::any()
             .add(
                 Condition::all()
-                    .add(message::Column::FromUuid.eq(to_uuid))
+                    .add(message::Column::FromUuid.eq(to_contact.uuid))
                     .add(message::Column::ToUuid.eq(self_contact.uuid)),
             )
             .add(
                 Condition::all()
                     .add(message::Column::FromUuid.eq(self_contact.uuid))
-                    .add(message::Column::ToUuid.eq(to_uuid)),
+                    .add(message::Column::ToUuid.eq(to_contact.uuid)),
             );
 
         let messages = message::Entity::find()
@@ -209,6 +208,13 @@ impl MessageService {
             .order_by(message::Column::SentAt, sea_orm::Order::Desc)
             .all(&self.db)
             .await?;
+
+        log::debug!(
+            "Got correspondence for: '{:?}' -> '{:?}'\n\tmessages: {:?}",
+            self_contact.uuid,
+            to_contact.uuid,
+            &messages
+        );
 
         Ok(messages)
     }

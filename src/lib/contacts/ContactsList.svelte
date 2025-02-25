@@ -16,7 +16,7 @@
   }
 
   async function onContactClicked(contact: Contact) {
-    await goto(`/chat/${contact.uuid}`);
+    await goto(`/chat/${contact.id}`);
   }
 </script>
 

@@ -1,4 +1,3 @@
-mod event_payloads;
 mod message;
 mod message_error;
 mod message_service;

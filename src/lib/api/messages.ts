@@ -1,15 +1,15 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Message, type MessageForm } from "./models/Message";
 
-export async function sendMessage(message_form: MessageForm) {
+export async function sendMessage(messageForm: MessageForm) {
   await invoke("send_message", {
-    message_form: message_form,
+    message_form: messageForm,
   });
 }
 
-export async function getCorrespondence(to_uuid: string): Promise<Message[]> {
+export async function getCorrespondence(toId: number): Promise<Message[]> {
   const json = await invoke("get_correspondence", {
-    to_uuid: to_uuid,
+    to_id: toId,
   });
 
   const messages = [];

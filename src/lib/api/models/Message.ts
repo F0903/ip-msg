@@ -2,11 +2,6 @@ import type { Deserializable } from "./utils/Deserializable";
 
 export type ContentType = "Text" | "File";
 
-export type ContactUuidChangedEvent = {
-  old_uuid: string;
-  new_uuid: string;
-};
-
 export type MessageForm = {
   to_uuid: string;
   content_type: ContentType;

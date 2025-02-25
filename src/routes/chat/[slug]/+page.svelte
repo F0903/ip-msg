@@ -1,9 +1,6 @@
 <script lang="ts">
-  import { goto, invalidateAll } from "$app/navigation";
-  import {
-    Message,
-    type ContactUuidChangedEvent,
-  } from "$lib/api/models/Message.js";
+  import { invalidateAll } from "$app/navigation";
+  import { Message } from "$lib/api/models/Message.js";
   import ChatBubble from "$lib/chat/ChatBubble.svelte";
   import ChatPrompt from "$lib/chat/ChatPrompt.svelte";
   import { listen, type UnlistenFn } from "@tauri-apps/api/event";
@@ -11,6 +8,7 @@
 
   let { data } = $props();
 
+  let toContact = $derived(data.contacts.find((x) => x.id === data.toId))!;
   let messages: Message[] = $derived(data.messages);
 
   const textDecoder = new TextDecoder();
@@ -23,7 +21,7 @@
       "message-received",
       async (eventData: any) => {
         const msg = new Message().deserialize(eventData);
-        if (msg.from_uuid === data.toUuid) {
+        if (msg.from_uuid === toContact.uuid) {
           messages.push(msg);
         }
 
@@ -31,17 +29,15 @@
       }
     );
 
-    const unlisten_contact_uuid_changed = await listen(
-      "contact-uuid-changed",
+    const unlisten_contact_changed = await listen(
+      "contact-changed",
       async (eventData: any) => {
-        let contactChanges = eventData as ContactUuidChangedEvent;
-        if (data.toUuid === contactChanges.old_uuid) {
-          await goto(`/chat/${contactChanges.new_uuid}`);
-        }
+        //TODO
+        //await invalidateAll();
       }
     );
 
-    unlistenEvents.push(unlisten_received, unlisten_contact_uuid_changed);
+    unlistenEvents.push(unlisten_received, unlisten_contact_changed);
   });
 
   onDestroy(() => {
@@ -62,7 +58,7 @@
     </div>
   </div>
   <div class="bottom">
-    <ChatPrompt to_uuid={data.toUuid} />
+    <ChatPrompt to_uuid={toContact.uuid} />
   </div>
 </main>
 

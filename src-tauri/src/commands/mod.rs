@@ -10,6 +10,7 @@ pub fn get_handler<R: tauri::Runtime>()
         contacts::add_contact,
         contacts::get_all_contacts,
         contacts::get_self,
+        contacts::get_contact_with_id,
         messages::send_message,
         messages::get_correspondence
     ]

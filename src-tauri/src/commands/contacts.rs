@@ -34,6 +34,17 @@ pub async fn get_all_contacts(state: State<'_, AppState>) -> CommandResult<Vec<c
 }
 
 #[tauri::command(rename_all = "snake_case")]
+pub async fn get_contact_with_id(
+    state: State<'_, AppState>,
+    id: i32,
+) -> CommandResult<Option<contact::Model>> {
+    let contact = state.contacts.get_with_id(id).await.map_err_to_string()?;
+    log::debug!("Got contact with id: {:?}", contact);
+
+    Ok(contact)
+}
+
+#[tauri::command(rename_all = "snake_case")]
 pub async fn get_self(state: State<'_, AppState>) -> CommandResult<contact::Model> {
     let contact = state.contacts.get_self().await.map_err_to_string()?;
 

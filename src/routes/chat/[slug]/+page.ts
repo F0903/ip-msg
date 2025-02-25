@@ -2,12 +2,13 @@ import { getCorrespondence } from "$lib/api/messages";
 import type { PageLoad } from "./$types";
 
 export const load: PageLoad = async ({ params }) => {
-  const to_uuid = params.slug;
-  console.log("loading chat for uuid: " + to_uuid);
-  const messages = await getCorrespondence(to_uuid);
+  const toId = parseInt(params.slug);
+  const messages = await getCorrespondence(toId);
+  console.log(`loading chat page for id = ${toId}`);
+  console.log(messages);
 
   return {
-    toUuid: to_uuid,
+    toId: toId,
     messages: messages,
   };
 };

@@ -99,6 +99,12 @@ impl ContactsService {
         Ok(contact)
     }
 
+    pub async fn get_with_id(&self, id: i32) -> crate::Result<Option<contact::Model>> {
+        let contact = contact::Entity::find_by_id(id).one(&self.db).await?;
+
+        Ok(contact)
+    }
+
     pub async fn update_contact(
         &self,
         contact: contact::ActiveModel,

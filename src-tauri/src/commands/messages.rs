@@ -5,7 +5,6 @@ use crate::{
 use chrono::Utc;
 use entity::message;
 use tauri::State;
-use uuid::Uuid;
 
 #[tauri::command(rename_all = "snake_case")]
 pub async fn send_message(
@@ -33,11 +32,11 @@ pub async fn send_message(
 #[tauri::command(rename_all = "snake_case")]
 pub async fn get_correspondence(
     state: State<'_, AppState>,
-    to_uuid: Uuid,
+    to_id: i32,
 ) -> CommandResult<Vec<message::Model>> {
     let messages = state
         .messages
-        .get_correspondence(to_uuid)
+        .get_correspondence(to_id)
         .await
         .map_err_to_string()?;
 

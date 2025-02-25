@@ -1,8 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Contact, type ContactForm } from "./models/Contact";
 
-export async function addContact(contact_form: ContactForm) {
-  await invoke("add_contact", { contact_form: contact_form });
+export async function addContact(contactForm: ContactForm) {
+  await invoke("add_contact", { contact_form: contactForm });
 }
 
 export async function getSelfContact(): Promise<Contact> {
