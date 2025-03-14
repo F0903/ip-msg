@@ -66,7 +66,7 @@ impl MessageService {
         Ok(arc_self)
     }
 
-    async fn assert_contact(
+    async fn check_contact_uuid_changed(
         &self,
         message: &Message,
         mut contact: contact::Model,
@@ -109,7 +109,7 @@ impl MessageService {
             .contacts
             .get_or_create_with_ip(remote.ip(), Some(message.remote_uuid))
             .await?;
-        let contact = self.assert_contact(&message, contact).await?;
+        let contact = self.check_contact_uuid_changed(&message, contact).await?;
 
         let self_contact = self.contacts.get_self().await?;
 
@@ -203,7 +203,7 @@ impl MessageService {
         let network_message: Message = db_message.clone().into();
         self.net
             .send_to(
-                serde_json::to_vec(&network_message)?.as_slice(),
+                serde_json::to_vec(&Packet::Message(network_message))?.as_slice(),
                 (
                     Into::<IpAddr>::into(receiver.ip_address),
                     DEFAULT_MESSAGE_PORT,
