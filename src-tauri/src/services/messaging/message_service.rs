@@ -16,7 +16,7 @@ use tauri::{AppHandle, Emitter};
 use tokio::net::UdpSocket;
 
 pub const DEFAULT_MESSAGE_PORT: u16 = 45000;
-const MESSAGE_CHANNEL_SIZE: usize = 100;
+const MESSAGE_CHANNEL_SIZE: usize = 1000;
 
 pub struct MessageService {
     net: Arc<UdpSocket>,
