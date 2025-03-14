@@ -16,6 +16,7 @@ use tauri::{AppHandle, Emitter};
 use tokio::net::UdpSocket;
 
 pub const DEFAULT_MESSAGE_PORT: u16 = 45000;
+const MESSAGE_CHANNEL_SIZE: usize = 100;
 
 pub struct MessageService {
     net: Arc<UdpSocket>,
@@ -33,7 +34,7 @@ impl MessageService {
         log::info!("Setting up message service...");
 
         let net = Arc::new(UdpSocket::bind(format!("0.0.0.0:{}", DEFAULT_MESSAGE_PORT)).await?);
-        let (tx, mut rx) = tokio::sync::mpsc::channel(100);
+        let (tx, mut rx) = tokio::sync::mpsc::channel(MESSAGE_CHANNEL_SIZE);
         let mut listener = NetworkListener::new(net.clone(), tx);
         listener.start_listen().await?;
 

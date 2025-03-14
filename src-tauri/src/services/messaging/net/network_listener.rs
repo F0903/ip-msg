@@ -2,6 +2,8 @@ use super::{Packet, packet::ReceivedPacket};
 use std::sync::Arc;
 use tokio::{net::UdpSocket, task::JoinHandle};
 
+const UDP_BUFFER_SIZE: usize = 1024;
+
 pub struct NetworkListener {
     net: Arc<UdpSocket>,
     tx: tokio::sync::mpsc::Sender<ReceivedPacket>,
@@ -21,7 +23,7 @@ impl NetworkListener {
         let net = self.net.clone();
         let tx = self.tx.clone();
 
-        let mut buf = [0; 1024];
+        let mut buf = [0; UDP_BUFFER_SIZE];
         let task = tokio::spawn(async move {
             loop {
                 let (len, remote) = match net.recv_from(&mut buf).await {
