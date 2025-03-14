@@ -13,21 +13,21 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@fontsource-variable/roboto-flex": "^5.1.1",
+    "@fontsource-variable/roboto-flex": "^5.2.5",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-log": "~2.2.2",
-    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/api": "^2.3.0",
+    "@tauri-apps/plugin-log": "^2.3.1",
+    "@tauri-apps/plugin-opener": "^2.2.6",
     "svelte-fa": "^4.0.3"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.6",
-    "@sveltejs/kit": "^2.17.2",
+    "@sveltejs/kit": "^2.19.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
-    "svelte": "^5.20.4",
-    "svelte-check": "^4.0.0",
-    "typescript": "^5.7.3",
-    "vite": "^6.1.1",
-    "@tauri-apps/cli": "^2"
+    "svelte": "^5.23.0",
+    "svelte-check": "^4.1.5",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.2",
+    "@tauri-apps/cli": "^2.3.1"
   }
 }
