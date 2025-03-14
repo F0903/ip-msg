@@ -1,8 +1,6 @@
-use super::form_models::SendMessageForm;
 use crate::{
-    AppState, commands::CommandResult, services::messaging::Message, utils::MapErrToString,
+    AppState, commands::CommandResult, services::messaging::SendMessageForm, utils::MapErrToString,
 };
-use chrono::Utc;
 use entity::message;
 use tauri::State;
 
@@ -11,18 +9,9 @@ pub async fn send_message(
     state: State<'_, AppState>,
     message_form: SendMessageForm,
 ) -> CommandResult<message::Model> {
-    let self_contact = state.contacts.get_self().await.map_err_to_string()?;
     let sent_message = state
         .messages
-        .send_message(
-            Message {
-                remote_uuid: self_contact.uuid,
-                content_type: message_form.content_type,
-                content: message_form.content,
-                sent_at: Utc::now(),
-            },
-            message_form.to_uuid,
-        )
+        .send_message(message_form)
         .await
         .map_err_to_string()?;
 

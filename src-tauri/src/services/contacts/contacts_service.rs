@@ -1,7 +1,7 @@
 use entity::{contact, ip_address::IpAddress};
 use sea_orm::{
     ActiveValue::{NotSet, Set},
-    DatabaseConnection, TryIntoModel,
+    DatabaseConnection, IntoActiveModel, TryIntoModel,
     prelude::*,
 };
 use std::net::IpAddr;
@@ -107,8 +107,9 @@ impl ContactsService {
 
     pub async fn update_contact(
         &self,
-        contact: contact::ActiveModel,
+        contact: impl IntoActiveModel<contact::ActiveModel>,
     ) -> crate::Result<contact::ActiveModel> {
+        let contact = contact.into_active_model();
         log::info!("Updating contact: {:?}", contact);
         let updated_contact = contact.save(&self.db).await?;
 
@@ -117,8 +118,9 @@ impl ContactsService {
 
     pub async fn insert_contact(
         &self,
-        contact: contact::ActiveModel,
+        contact: impl IntoActiveModel<contact::ActiveModel>,
     ) -> crate::Result<contact::Model> {
+        let contact = contact.into_active_model();
         log::info!("Inserting contact: {:?}", contact);
         let added_contact = contact.insert(&self.db).await?;
 

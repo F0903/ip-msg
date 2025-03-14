@@ -6,4 +6,6 @@ pub enum MessageError {
     SendToNonExistantContact,
     #[error("requested contact not found")]
     ContactNotFound,
+    #[error("the message was sent with no recipient")]
+    NoRecipient,
 }

@@ -1,22 +1,16 @@
-use super::{CommandResult, form_models::ContactForm};
-use crate::{AppState, utils::MapErrToString};
+use super::CommandResult;
+use crate::{AppState, services::contacts::AddContactForm, utils::MapErrToString};
 use entity::contact;
-use sea_orm::{IntoActiveModel, prelude::*};
 use tauri::State;
 
 #[tauri::command(rename_all = "snake_case")]
 pub async fn add_contact(
     state: State<'_, AppState>,
-    contact_form: ContactForm,
+    contact_form: AddContactForm,
 ) -> CommandResult<()> {
-    let mut contact = contact_form.into_active_model();
-    contact.set(
-        contact::Column::Uuid,
-        Value::Uuid(Some(Box::new(Uuid::new_v4()))), // Generate the UUID
-    );
     let added_contact = state
         .contacts
-        .insert_contact(contact)
+        .insert_contact(contact_form)
         .await
         .map_err_to_string()?;
 

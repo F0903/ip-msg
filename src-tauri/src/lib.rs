@@ -14,7 +14,7 @@ use tauri::Manager;
 
 pub struct AppState {
     contacts: Arc<ContactsService>,
-    messages: MessageService,
+    messages: Arc<MessageService>,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

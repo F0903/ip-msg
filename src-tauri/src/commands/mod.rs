@@ -1,5 +1,4 @@
 mod contacts;
-mod form_models;
 mod messages;
 
 pub type CommandResult<T> = std::result::Result<T, String>;

@@ -3,7 +3,7 @@ use sea_orm::{
     prelude::StringLen, sea_query::ValueType,
 };
 use serde::{Deserialize, Serialize};
-use std::net::IpAddr;
+use std::net::{IpAddr, SocketAddr};
 
 // A wrapper type for IpAddr that can be serialized to a SeaORM ActiveValue, and used as a custom type in SeaORM entities.
 #[derive(Debug, Clone, PartialEq, PartialOrd, Ord, Eq, Serialize)]
@@ -59,6 +59,14 @@ impl From<IpAddr> for IpAddress {
 impl Into<IpAddr> for IpAddress {
     fn into(self) -> IpAddr {
         self.ip_address
+    }
+}
+
+impl From<SocketAddr> for IpAddress {
+    fn from(value: SocketAddr) -> Self {
+        IpAddress {
+            ip_address: value.ip(),
+        }
     }
 }
 

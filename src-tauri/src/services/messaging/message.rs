@@ -6,6 +6,7 @@ use uuid::Uuid;
 // The object that represents messages that are both sent and received over the network
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Message {
+    pub id: i32,
     pub remote_uuid: Uuid,
     pub content_type: ContentType,
     pub content: Vec<u8>,
@@ -15,6 +16,7 @@ pub struct Message {
 impl From<message::Model> for Message {
     fn from(value: message::Model) -> Self {
         Self {
+            id: value.id,
             remote_uuid: value.from_uuid,
             content_type: value.content_type,
             content: value.content,
@@ -26,6 +28,7 @@ impl From<message::Model> for Message {
 impl From<&message::Model> for Message {
     fn from(value: &message::Model) -> Self {
         Self {
+            id: value.id,
             remote_uuid: value.from_uuid,
             content_type: value.content_type.clone(),
             content: value.content.clone(),
