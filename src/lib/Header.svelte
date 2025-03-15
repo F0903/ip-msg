@@ -49,7 +49,5 @@
     background-color: var(--secondary-color);
 
     height: var(--header-height);
-
-    box-sizing: border-box;
   }
 </style>

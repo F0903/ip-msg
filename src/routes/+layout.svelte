@@ -38,13 +38,12 @@
   .content {
     display: flex;
     flex-direction: row;
-
     height: 100%;
   }
 
   .container {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto calc(100vh - var(--header-height));
 
     height: 100vh;
   }
@@ -66,6 +65,8 @@
 
     --primary-text-color: hsl(0, 0%, 65%);
     --secondary-text-color: hsl(30, 40%, 81%);
+
+    --header-height: 50px;
 
     background-color: var(--primary-color);
     color: var(--primary-text-color);

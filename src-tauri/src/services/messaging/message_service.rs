@@ -159,6 +159,7 @@ impl MessageService {
     }
 
     async fn send_message_received(&self, message_id: i32, to: IpAddress) -> crate::Result<()> {
+        log::debug!("Sending message received confirmation to: {:?}", to);
         self.net
             .send_to(
                 serde_json::to_vec(&Packet::MessageReceived(message_id))
@@ -201,6 +202,7 @@ impl MessageService {
         .try_into_model()?;
 
         let network_message: Message = db_message.clone().into();
+        log::debug!("Sending message: {:?}", network_message);
         self.net
             .send_to(
                 serde_json::to_vec(&Packet::Message(network_message))?.as_slice(),

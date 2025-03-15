@@ -49,12 +49,17 @@
 
 <main class="chat">
   <div class="top">
-    <div class="chat-messages">
-      {#each messages as message}
-        <ChatBubble outgoing={message.from_uuid === data.selfContact.uuid}>
-          <span>{textDecoder.decode(message.content)}</span>
-        </ChatBubble>
-      {/each}
+    <div class="chat-messages-container">
+      <div class="chat-messages">
+        {#each messages as message}
+          <ChatBubble
+            outgoing={message.from_uuid === data.selfContact.uuid}
+            received={message.received}
+          >
+            <span>{textDecoder.decode(message.content)}</span>
+          </ChatBubble>
+        {/each}
+      </div>
     </div>
   </div>
   <div class="bottom">
@@ -72,7 +77,6 @@
     gap: 20px;
 
     height: 100%;
-    max-width: 1000px;
     margin: auto;
   }
 
@@ -80,6 +84,29 @@
     flex-grow: 1;
     padding: 25px 50px;
     width: 100%;
+    overflow-y: scroll;
+    scrollbar-color: blue;
+  }
+
+  /* width */
+  .top::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  .top::-webkit-scrollbar-track {
+    background: hsl(0, 0%, 15%);
+    padding: 5px;
+  }
+
+  /* Handle */
+  .top::-webkit-scrollbar-thumb {
+    background: hsl(0, 0%, 20%);
+  }
+
+  /* Handle on hover */
+  .top::-webkit-scrollbar-thumb:hover {
+    background: var(--quaternary-color);
   }
 
   .bottom {
@@ -94,6 +121,7 @@
     align-items: center;
 
     width: 100%;
+    max-height: 100%;
 
     background-color: var(--primary-color);
   }
