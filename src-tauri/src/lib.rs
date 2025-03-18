@@ -1,3 +1,6 @@
+#![feature(const_type_name)]
+#![feature(trait_alias)]
+
 mod commands;
 mod error;
 mod services;
@@ -8,13 +11,12 @@ pub use error::{Error, Result};
 use dotenv_codegen::dotenv;
 use migration::{Migrator, MigratorTrait};
 use sea_orm::ConnectOptions;
-use services::{contacts::ContactsService, messaging::MessageService};
+use services::{ServiceCollection, contacts::ContactsService, messaging::MessageService};
 use std::sync::Arc;
 use tauri::Manager;
 
 pub struct AppState {
-    contacts: Arc<ContactsService>,
-    messages: Arc<MessageService>,
+    services: ServiceCollection,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -38,15 +40,14 @@ pub async fn run() -> anyhow::Result<()> {
         .build(tauri::generate_context!())?;
 
     log::info!("Setting up app state...");
+    log::info!("Setting up services...");
+
     let contacts = Arc::new(ContactsService::new(db.clone()));
     let messages =
         MessageService::start(db, Arc::clone(&contacts), app.app_handle().to_owned()).await?;
-    let state = AppState {
-        // We can clone the db because it's an Arc to a Sqlx pool internally.
-        contacts,
-        messages,
-    };
-    app.manage(state);
+    let services = ServiceCollection::with_services(vec![contacts, messages]);
+
+    app.manage(AppState { services });
 
     log::info!("Starting app...");
     app.run(|_, _| {});

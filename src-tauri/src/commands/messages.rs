@@ -1,5 +1,8 @@
 use crate::{
-    AppState, commands::CommandResult, services::messaging::SendMessageForm, utils::MapErrToString,
+    AppState,
+    commands::CommandResult,
+    services::messaging::{MessageService, SendMessageForm},
+    utils::MapErrToString,
 };
 use entity::message;
 use tauri::State;
@@ -9,8 +12,9 @@ pub async fn send_message(
     state: State<'_, AppState>,
     message_form: SendMessageForm,
 ) -> CommandResult<message::Model> {
-    let sent_message = state
-        .messages
+    let messages = state.services.get_service::<MessageService>();
+
+    let sent_message = messages
         .send_message(message_form)
         .await
         .map_err_to_string()?;
@@ -23,11 +27,12 @@ pub async fn get_correspondence(
     state: State<'_, AppState>,
     to_id: i32,
 ) -> CommandResult<Vec<message::Model>> {
-    let messages = state
-        .messages
+    let messages = state.services.get_service::<MessageService>();
+
+    let correspondence = messages
         .get_correspondence(to_id)
         .await
         .map_err_to_string()?;
 
-    Ok(messages)
+    Ok(correspondence)
 }

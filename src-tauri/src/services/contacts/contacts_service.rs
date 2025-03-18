@@ -7,10 +7,14 @@ use sea_orm::{
 use std::net::IpAddr;
 use tokio::sync::OnceCell;
 
+use crate::services::Service;
+
 pub struct ContactsService {
     db: DatabaseConnection,
     self_contact: OnceCell<contact::Model>,
 }
+
+impl Service for ContactsService {}
 
 impl ContactsService {
     pub fn new(db: DatabaseConnection) -> Self {

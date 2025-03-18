@@ -1,5 +1,6 @@
 use super::{Message, MessageError, net::ReceivedPacket};
 use crate::services::{
+    Service,
     contacts::ContactsService,
     messaging::net::{NetworkListener, Packet},
 };
@@ -24,6 +25,8 @@ pub struct MessageService {
     contacts: Arc<ContactsService>,
     app_handle: AppHandle,
 }
+
+impl Service for MessageService {}
 
 impl MessageService {
     pub async fn start(
