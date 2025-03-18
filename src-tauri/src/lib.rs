@@ -1,4 +1,4 @@
-#![feature(const_type_name)]
+#![feature(const_type_id)]
 #![feature(trait_alias)]
 
 mod commands;
